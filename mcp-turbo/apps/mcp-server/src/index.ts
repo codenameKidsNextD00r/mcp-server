@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { parseDocument, verifyIdentity } from "@mcp-kyc/tools";
 
@@ -12,7 +12,7 @@ function mkResp(tool: string, payload: any) {
   return { mcp_request_id: uuidv4(), status: "ok", tool, payload };
 }
 
-app.post("/mcp/v1/tools/document-parser/parse", async (req, res) => {
+app.post("/mcp/v1/tools/document-parser/parse", async (req: Request, res: Response) => {
   const { text } = req.body;
   const result = await parseDocument(text);
   const docId = uuidv4();
@@ -20,7 +20,7 @@ app.post("/mcp/v1/tools/document-parser/parse", async (req, res) => {
   res.json(mkResp("document-parser", { documentId: docId, ...result }));
 });
 
-app.post("/mcp/v1/tools/identity-verifier/verify", async (req, res) => {
+app.post("/mcp/v1/tools/identity-verifier/verify", async (req: Request, res: Response) => {
   const { documentId, extracted, selfieBase64 } = req.body;
   const doc = documentId ? documents[documentId]?.extracted : extracted;
   const result = await verifyIdentity({ extracted: doc, selfieBase64 });
